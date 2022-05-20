@@ -1,0 +1,10 @@
+{
+  "expo": {
+    "name": "calendar-todo",
+    "slug": "calendar-todo",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
