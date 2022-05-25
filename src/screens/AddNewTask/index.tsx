@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
-import { useTasks } from '../../hooks/Tasks';
 import {
     Alert,
     KeyboardAvoidingView,
@@ -9,20 +8,22 @@ import {
     Image,
     ScrollView
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import theme from '../../global/styles/theme';
 
+import { useTasks } from '../../hooks/Tasks';
+import { useAuth } from '../../hooks/Auth';
+
 import { CalendarComponent } from '../../components/Calendar';
 import { Step } from '../../components/Step';
+import { Button } from '../../components/Button';
 
 import logo from '../../assets/logo.png';
 
 import {
     Container,
-    Text,
     Input,
-    ButtonAdd,
-    TextButton,
 } from './styles';
 
 interface Date {
@@ -49,6 +50,7 @@ interface MarkedDateProps {
 
 export function AddNewTask() {
     const { setTasks } = useTasks();
+    const { user } = useAuth();
     const navigation = useNavigation();
 
     const [task, setTask] = useState('');
@@ -66,28 +68,47 @@ export function AddNewTask() {
         })
     };
 
-    function handleAddNewTask() {
-        if (!date.dateString) {
-            Alert.alert('Selecione a data');
-            return
-        };
+    async function handleAddNewTask() {
+        try {
+            const dataKey = `@calendar-todo:tasks_user:${user.id}`;
 
-        if (!task) {
-            Alert.alert('Digite o nome da tarefa');
-            return
-        };
+            const data = await AsyncStorage.getItem(dataKey);
+            const currentData = data ? JSON.parse(data) : [];
 
-        const newTask: Task = {
-            id: new Date().getTime(),
-            date: date,
-            title: task,
-            done: false,
-        };
+            if (!date.dateString) {
+                Alert.alert('Selecione a data');
+                return
+            };
+    
+            if (!task) {
+                Alert.alert('Digite o nome da tarefa');
+                return
+            };
+    
+            const newTask: Task = {
+                id: new Date().getTime(),
+                date: date,
+                title: task,
+                done: false,
+            };
 
-        setTasks(prevTasks => [...prevTasks, newTask]);
-        setTask('');
-        Alert.alert('Tarefa cadastrada');
-        navigation.navigate('Tarefas');
+            const dataFormatted = [
+                ...currentData,
+                newTask,
+            ];
+
+            await AsyncStorage.setItem(dataKey, JSON.stringify(dataFormatted));
+            
+            setTasks(prevTasks => [...prevTasks, newTask]);
+            setTask('');
+            
+            Alert.alert('Tarefa cadastrada');
+
+            navigation.navigate('Tarefas');
+        } catch (error) {
+            console.log(error);
+            Alert.alert('Não foi possível cadastrar a tarefa');
+        }
     };
 
     return (
@@ -95,7 +116,7 @@ export function AddNewTask() {
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                 <ScrollView>
                     <Container>
-                        <Image source={logo} />
+                        <Image source={logo} style={{ width: 150, height: 50 }} />
 
                         <Step
                             number={1}
@@ -118,11 +139,10 @@ export function AddNewTask() {
                             onChangeText={setTask}
                         />
 
-                        <ButtonAdd
+                        <Button 
+                            title='Adiciona tarefa'
                             onPress={handleAddNewTask}
-                        >
-                            <TextButton>Adicionar tarefa</TextButton>
-                        </ButtonAdd>
+                        />
                     </Container>
                 </ScrollView>
             </TouchableWithoutFeedback>

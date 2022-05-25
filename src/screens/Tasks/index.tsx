@@ -1,13 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { useTasks } from '../../hooks/Tasks';
+import { Image, FlatList, Modal } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { CalendarComponent } from '../../components/Calendar';
 import theme from '../../global/styles/theme';
 
+import { useTasks } from '../../hooks/Tasks';
+import { useAuth } from '../../hooks/Auth';
+
 import logo from '../../assets/logo.png';
 
 import { Task } from '../../components/Task';
-import { Image, FlatList } from 'react-native';
+import { EditTask } from '../../components/EditTask';
 
 import {
     Container,
@@ -18,6 +22,7 @@ interface Task {
     id: number;
     title: string;
     date: Date;
+    done: boolean;
 };
 
 interface Date {
@@ -29,10 +34,12 @@ interface Date {
 };
 
 export function Tasks() {
-    const { tasks } = useTasks();
+    const { tasks, setTasks, isEditing, setIsEditing } = useTasks();
+    const { user } = useAuth();
     const [date, setDate] = useState<Date>({} as Date);
     const [markedDate, setMarkedDate] = useState({});
     const [tasksOfTheDaySelected, setTasksOfTheDaySelected] = useState([]);
+    // const [tasksStorageLoading, setTasksStorageLoading] = useState(true);
 
     function selectDate(day: Date) {
         setDate(day);
@@ -68,7 +75,7 @@ export function Tasks() {
                     ...prevState
                 })
                 )
-            ) : (
+            ) : !task.done && (
                 setMarkedDate(prevState => (
                     {
                         ...prevState,
@@ -82,14 +89,36 @@ export function Tasks() {
         ));
     }, [date, tasks]);
 
+    async function loadTasksStorageData() {
+        const dataKey = `@calendar-todo:tasks_user:${user.id}`;
+
+        console.log('aqui', dataKey)
+        const tasksStorage = await AsyncStorage.getItem(dataKey);
+
+        if (tasksStorage) {
+            const tasksFormatted = JSON.parse(tasksStorage);
+            setTasks(tasksFormatted);
+        };
+
+        // setTasksStorageLoading(false)
+    };
+
+    useEffect(() => {
+        loadTasksStorageData();
+    }, []);
+
     return (
         <Container>
-            <Image source={logo} style={{ marginBottom: 10 }} />
+            <Image source={logo} style={{ width: 150, height: 50, marginBottom: 10 }} />
 
             <CalendarComponent
                 onDayPress={selectDate}
                 markedDates={markedDate}
             />
+
+            {!!tasksOfTheDaySelected.length &&
+                <Text>Quantidade de tarefas do dia: {tasksOfTheDaySelected.length}</Text>
+            }
 
             {tasksOfTheDaySelected.length
                 ? (
@@ -107,6 +136,10 @@ export function Tasks() {
                     <Text>Não há tarefas neste dia ainda</Text>
                 )
             }
+
+            <Modal visible={isEditing}>
+                <EditTask close={() => setIsEditing(false)} />
+            </Modal>
         </Container>
     );
 };

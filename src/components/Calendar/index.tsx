@@ -70,9 +70,6 @@ function CalendarComponent({
                 todayTextColor: theme.colors.success_light,
             }}
             firstDay={1}
-            minDate={String(new Date())}
-            // markingType="period"
-            // markedDates={markedDates}
             onDayPress={onDayPress}
             markingType="custom"
             markedDates={markedDates}

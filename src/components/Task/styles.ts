@@ -7,19 +7,24 @@ interface Props {
     done: boolean;
 };
 
-export const Container = styled(TouchableOpacity)`
+export const Container = styled.View`
     background-color: ${({ theme }) => theme.colors.shape};
     width: 100%;
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: space-between;
     margin-top: ${RFValue(15)}px;
     padding: ${RFValue(10)}px;
     border-left-color: ${({ theme }) => theme.colors.secondary};
     border-left-width: 5px;
     border-top-left-radius: 5px;
     border-bottom-left-radius: 5px;
+`;
+
+export const TaskItem = styled(TouchableOpacity)`
+    display: flex;
+    flex-direction: row;
 `;
 
 export const Checked = styled.View<Props>`

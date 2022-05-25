@@ -6,8 +6,6 @@ import React, {
     useEffect
 } from 'react';
 
-import * as AuthSession from 'expo-auth-session';
-
 import * as AppleAuthentication from 'expo-apple-authentication';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';

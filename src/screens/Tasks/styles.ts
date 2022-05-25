@@ -10,8 +10,8 @@ export const Container = styled.View`
 
     background-color: ${({ theme }) => theme.colors.primary};
 
-    padding-left: ${RFValue(10)}px;
-    padding-right: ${RFValue(10)}px;
+    padding-left: ${RFValue(15)}px;
+    padding-right: ${RFValue(15)}px;
     padding-top: ${getStatusBarHeight() + RFValue(28)}px;
     padding-bottom: ${getBottomSpace()}px;
 `;
@@ -22,3 +22,5 @@ export const Text = styled.Text`
     font-family: ${({ theme }) => theme.fonts.medium};
     margin-top: 10px;
 `;
+
+

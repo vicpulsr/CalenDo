@@ -1,10 +1,16 @@
 import React from 'react';
-
+import { Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import { useTasks } from '../../hooks/Tasks';
+import { useAuth } from '../../hooks/Auth';
+
+import { ButtonEditTask } from '../ButtonEditTask';
 
 import {
     Container,
+    TaskItem,
     Checked,
     Text
 } from './styles';
@@ -22,34 +28,47 @@ interface Props {
 
 export function Task({ task }: Props) {
     const { tasks, setTasks } = useTasks();
+    const { user } = useAuth();
 
-    function handleToggleTaskDone(id: number) {
-        const updatedTasks = tasks.map(task => ({ ...task }));
+    async function handleToggleTaskDone(id: number) {
+        try {
+            const dataKey = `@calendar-todo:tasks_user:${user.id}`;
 
-        let foundItem = updatedTasks.find((task: Task) => task.id === id);
-        if (!foundItem) return;
-        foundItem.done = !foundItem.done;
+            const updatedTasks = tasks.map(task => ({ ...task }));
+    
+            let foundItem = updatedTasks.find((task: Task) => task.id === id);
+            if (!foundItem) return;
+            foundItem.done = !foundItem.done;
 
-        setTasks(updatedTasks);
+            await AsyncStorage.setItem(dataKey, JSON.stringify(updatedTasks));
+    
+            setTasks(updatedTasks);
+        } catch (error) {
+            console.log(error);
+            Alert.alert('Não foi possível concluir a tarefa');
+        }
     };
 
     return (
-        <Container
-            onPress={() => handleToggleTaskDone(task.id)}
-            activeOpacity={0.7}
-        >
-            <Checked
-                done={task.done}
+        <Container>
+            <TaskItem
+                onPress={() => handleToggleTaskDone(task.id)}
+                activeOpacity={0.7}
             >
-                {task.done && (
-                    <Icon
-                        name="check"
-                        size={12}
-                        color="#FFF"
-                    />
-                )}
-            </Checked>
-            <Text>{task.title}</Text>
+                <Checked
+                    done={task.done}
+                >
+                    {task.done && (
+                        <Icon
+                            name="check"
+                            size={12}
+                            color="#FFF"
+                        />
+                    )}
+                </Checked>
+                <Text>{task.title}</Text>
+            </TaskItem>
+            <ButtonEditTask task={task} />
         </Container>
     );
 };

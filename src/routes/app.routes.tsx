@@ -1,5 +1,4 @@
 import React from 'react';
-import { Platform } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useTheme } from 'styled-components';
 
@@ -31,19 +30,15 @@ export function AppRoutes() {
                 tabBarActiveTintColor: theme.colors.primary,
                 tabBarInactiveTintColor: theme.colors.secondary,
                 tabBarLabelPosition: 'beside-icon',
-                tabBarStyle: {
-                    height: 88,
-                    paddingVertical: Platform.OS === 'ios' ? 20 : 0
-                }
             }}
-        >           
+        >
             <Screen
-                name="Adicionar tarefa"
-                component={AddNewTask}
+                name="Tarefas"
+                component={Tasks}
                 options={{
                     tabBarIcon: (({ size, color }) =>
                         <MaterialIcons
-                            name='add'
+                            name='format-list-bulleted'
                             size={size}
                             color={color}
                         />
@@ -52,12 +47,12 @@ export function AppRoutes() {
             />
 
             <Screen
-                name="Tarefas"
-                component={Tasks}
+                name="Adicionar tarefa"
+                component={AddNewTask}
                 options={{
                     tabBarIcon: (({ size, color }) =>
                         <MaterialIcons
-                            name='format-list-bulleted'
+                            name='add'
                             size={size}
                             color={color}
                         />
