@@ -39,7 +39,6 @@ export function Tasks() {
     const [date, setDate] = useState<Date>({} as Date);
     const [markedDate, setMarkedDate] = useState({});
     const [tasksOfTheDaySelected, setTasksOfTheDaySelected] = useState([]);
-    // const [tasksStorageLoading, setTasksStorageLoading] = useState(true);
 
     function selectDate(day: Date) {
         setDate(day);
@@ -92,15 +91,12 @@ export function Tasks() {
     async function loadTasksStorageData() {
         const dataKey = `@calendar-todo:tasks_user:${user.id}`;
 
-        console.log('aqui', dataKey)
         const tasksStorage = await AsyncStorage.getItem(dataKey);
 
         if (tasksStorage) {
             const tasksFormatted = JSON.parse(tasksStorage);
             setTasks(tasksFormatted);
         };
-
-        // setTasksStorageLoading(false)
     };
 
     useEffect(() => {
@@ -117,7 +113,9 @@ export function Tasks() {
             />
 
             {!!tasksOfTheDaySelected.length &&
-                <Text>Quantidade de tarefas do dia: {tasksOfTheDaySelected.length}</Text>
+                <Text style={{ alignSelf: 'flex-end' }}>
+                    Quantidade de tarefas do dia: {tasksOfTheDaySelected.length}
+                </Text>
             }
 
             {tasksOfTheDaySelected.length
@@ -129,7 +127,6 @@ export function Tasks() {
                             <Task task={item} />
                         )}
                         style={{ width: '100%', marginTop: 10 }}
-                    // showsVerticalScrollIndicator={false}
                     />
                 )
                 : (

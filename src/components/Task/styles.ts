@@ -48,3 +48,8 @@ export const Checked = styled.View<Props>`
 export const Text = styled.Text`
     color: ${({ theme }) => theme.colors.primary};
 `;
+
+export const Buttons = styled.View`
+    display: flex;
+    flex-direction: row;
+`;

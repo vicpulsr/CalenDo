@@ -6,13 +6,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTasks } from '../../hooks/Tasks';
 import { useAuth } from '../../hooks/Auth';
 
-import { ButtonEditTask } from '../ButtonEditTask';
+import { ButtonActionTask } from '../ButtonActionTask';
 
 import {
     Container,
     TaskItem,
     Checked,
-    Text
+    Text,
+    Buttons
 } from './styles';
 
 interface Task {
@@ -36,13 +37,12 @@ export function Task({ task }: Props) {
 
             const updatedTasks = tasks.map(task => ({ ...task }));
     
-            let foundItem = updatedTasks.find((task: Task) => task.id === id);
+            let foundItem = updatedTasks.find(task => task.id === id);
             if (!foundItem) return;
             foundItem.done = !foundItem.done;
 
-            await AsyncStorage.setItem(dataKey, JSON.stringify(updatedTasks));
-    
             setTasks(updatedTasks);
+            await AsyncStorage.setItem(dataKey, JSON.stringify(updatedTasks));
         } catch (error) {
             console.log(error);
             Alert.alert('Não foi possível concluir a tarefa');
@@ -68,7 +68,11 @@ export function Task({ task }: Props) {
                 </Checked>
                 <Text>{task.title}</Text>
             </TaskItem>
-            <ButtonEditTask task={task} />
+
+            <Buttons>
+                <ButtonActionTask task={task} type='edit' style={{ marginRight: 10 }} />
+                <ButtonActionTask task={task} type='remove' />
+            </Buttons>
         </Container>
     );
 };

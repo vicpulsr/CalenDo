@@ -1,5 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { 
+    TouchableOpacity, 
+    Keyboard, 
+    KeyboardAvoidingView, 
+    TouchableWithoutFeedback 
+} from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -45,7 +50,7 @@ interface MarkedDateProps {
 
 export function EditTask({ close }: Props) {
     const { user } = useAuth();
-    const { tasks, taskIdIsEditing, setTasks } = useTasks();
+    const { tasks, taskId, setTasks } = useTasks();
 
     const [task, setTask] = useState<Task>({} as Task);
     const [title, setTitle] = useState('');
@@ -53,7 +58,7 @@ export function EditTask({ close }: Props) {
     const [markedDate, setMarkedDate] = useState<MarkedDateProps>({} as MarkedDateProps);
 
     function getTaskEditingInfo() {
-        const task = tasks.find(task => task.id === taskIdIsEditing);
+        const task = tasks.find(task => task.id === taskId);
         setTask(task);
         setTitle(task.title);
         setMarkedDate({
@@ -96,34 +101,38 @@ export function EditTask({ close }: Props) {
     }, []);
 
     return (
-        <Container>
-            <Header>
-                <HeaderText>Editando a tarefa</HeaderText>
-                <TouchableOpacity onPress={close}>
-                    <MaterialIcons
-                        name='close'
-                        size={35}
-                        color={theme.colors.shape}
+        <KeyboardAvoidingView behavior='position' enabled>
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                <Container>
+                    <Header>
+                        <HeaderText>Editando a tarefa</HeaderText>
+                        <TouchableOpacity onPress={close}>
+                            <MaterialIcons
+                                name='close'
+                                size={35}
+                                color={theme.colors.shape}
+                            />
+                        </TouchableOpacity>
+                    </Header>
+
+                    <Text>Se desejar, altere a data</Text>
+                    <CalendarComponent
+                        onDayPress={selectDate}
+                        markedDates={markedDate}
                     />
-                </TouchableOpacity>
-            </Header>
 
-            <Text>Se desejar, altere a data</Text>
-            <CalendarComponent
-                onDayPress={selectDate}
-                markedDates={markedDate}
-            />
+                    <Text>Se desejar, altere o título</Text>
+                    <Title
+                        value={title}
+                        onChangeText={setTitle}
+                    />
 
-            <Text>Se desejar, altere o título</Text>
-            <Title
-                value={title}
-                onChangeText={setTitle}
-            />
-
-            <Button
-                title='Salvar alterações'
-                onPress={handleEditTask}
-            />
-        </Container>
+                    <Button
+                        title='Salvar alterações'
+                        onPress={handleEditTask}
+                    />
+                </Container>
+            </TouchableWithoutFeedback>
+        </KeyboardAvoidingView>
     );
 };

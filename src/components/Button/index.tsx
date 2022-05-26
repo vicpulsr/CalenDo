@@ -6,7 +6,7 @@ import {
     Text
 } from './styles';
 
-interface Props extends RectButtonProps{
+interface Props extends RectButtonProps {
     title: string;
 };
 

@@ -36,8 +36,8 @@ interface ITasksContextData {
     tasksStorageLoading: boolean;
     isEditing: boolean;
     setIsEditing: React.Dispatch<SetStateAction<boolean>>;
-    taskIdIsEditing: number;
-    setTaskIdIsEditing: React.Dispatch<SetStateAction<number>>;
+    taskId: number;
+    setTaskId: React.Dispatch<SetStateAction<number>>;
 };
 
 const TasksContext = createContext({} as ITasksContextData);
@@ -48,7 +48,7 @@ function TasksProvider({ children }: TasksProviderProps) {
     const [tasks, setTasks] = useState<Task[]>([]);
     const [tasksStorageLoading, setTasksStorageLoading] = useState(true);
     const [isEditing, setIsEditing] = useState(false);
-    const [taskIdIsEditing, setTaskIdIsEditing] = useState();
+    const [taskId, setTaskId] = useState();
 
     const dataKey = `@calendar-todo:tasks_user:${user.id}`;
 
@@ -66,10 +66,6 @@ function TasksProvider({ children }: TasksProviderProps) {
     useEffect(() => {
         loadTasksStorageData();
     }, []);
-    
-    useEffect(() => {
-        loadTasksStorageData();
-    }, [tasks]);
 
     return (
         <TasksContext.Provider value={{
@@ -78,8 +74,8 @@ function TasksProvider({ children }: TasksProviderProps) {
             tasksStorageLoading,
             isEditing, 
             setIsEditing,
-            taskIdIsEditing, 
-            setTaskIdIsEditing,
+            taskId, 
+            setTaskId
         }}>
             {children}
         </TasksContext.Provider>
